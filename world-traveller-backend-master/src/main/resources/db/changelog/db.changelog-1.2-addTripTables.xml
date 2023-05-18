@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="202210311157" author="igolob">
+
+        <createSequence sequenceName="trip_id_seq" startValue="1" incrementBy="1"/>
+
+        <createTable tableName="trip">
+            <column name="id" type="bigint" defaultValueSequenceNext="trip_id_seq">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="location_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="image" type="blob">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_visited" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="upload_timestamp" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="transportation_type" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+            <column name="traffic_rating" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_solo" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="trip_rating" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="text">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="trip"
+                baseColumnNames="user_id"
+                constraintName="fk_trip_user_id"
+                referencedTableName="user_profile"
+                referencedColumnNames="user_id"
+        />
+
+        <addForeignKeyConstraint
+                baseTableName="trip"
+                baseColumnNames="location_id"
+                constraintName="fk_trip_location_id"
+                referencedTableName="location"
+                referencedColumnNames="id"
+        />
+
+    </changeSet>
+
+    <changeSet id="202210311159" author="igolob">
+
+        <createTable tableName="trip_like">
+            <column name="user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="trip_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey tableName="trip_like" columnNames="user_id, trip_id"/>
+
+        <addForeignKeyConstraint
+                baseTableName="trip_like"
+                baseColumnNames="user_id"
+                constraintName="fk_trip_like_user_id"
+                referencedTableName="user_profile"
+                referencedColumnNames="user_id"
+        />
+
+        <addForeignKeyConstraint
+                baseTableName="trip_like"
+                baseColumnNames="trip_id"
+                constraintName="fk_trip_like_trip_id"
+                referencedTableName="trip"
+                referencedColumnNames="id"
+        />
+
+    </changeSet>
+
+    <changeSet id="202211110159" author="eprodan">
+        <renameColumn tableName="trip" oldColumnName="is_solo" newColumnName="solo"/>
+    </changeSet>
+
+    <changeSet id="202201101523" author="igolob">
+        <dropColumn tableName="trip" columnName="image"/>
+        <addColumn tableName="trip" >
+            <column name="image" type="bytea" >
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

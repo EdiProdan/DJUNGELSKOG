@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="202210311170" author="igolob">
+
+        <createSequence sequenceName="badge_id_seq" startValue="1" incrementBy="1"/>
+
+        <createTable tableName="badge">
+            <column name="id" type="bigint" defaultValueSequenceNext="badge_id_seq">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="image" type="blob">
+                <constraints nullable="true"/>
+            </column>
+            <column name="type" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+    </changeSet>
+
+    <changeSet id="202210311171" author="igolob">
+
+        <createTable tableName="country_badge">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="visit_capital_city" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="required_number" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="country_badge"
+                baseColumnNames="id"
+                constraintName="fk_country_badge_id"
+                referencedTableName="badge"
+                referencedColumnNames="id"
+        />
+
+    </changeSet>
+
+    <changeSet id="202210311628" author="igolob">
+
+        <createTable tableName="city_badge">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="required_locations" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="city_badge"
+                baseColumnNames="id"
+                constraintName="fk_city_badge_id"
+                referencedTableName="badge"
+                referencedColumnNames="id"
+        />
+
+    </changeSet>
+
+    <changeSet id="202210311632" author="igolob">
+
+        <createSequence sequenceName="city_badge_requirement_id_seq" startValue="1" incrementBy="1"/>
+
+        <createTable tableName="city_badge_requirement">
+            <column name="id" type="bigint" defaultValueSequenceNext="city_badge_requirement_id_seq">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="badge_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="required_locations" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="location_type" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="city_badge_requirement"
+                baseColumnNames="badge_id"
+                constraintName="fk_city_badge_requirement"
+                referencedTableName="city_badge"
+                referencedColumnNames="id"
+        />
+
+    </changeSet>
+
+    <changeSet id="202210311633" author="igolob">
+
+        <createTable tableName="wishlist_badge">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="wishlist_entry_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="wishlist_badge"
+                baseColumnNames="id"
+                constraintName="fk_wishlist_badge_id"
+                referencedTableName="badge"
+                referencedColumnNames="id"
+        />
+
+        <addForeignKeyConstraint
+                baseTableName="wishlist_badge"
+                baseColumnNames="wishlist_entry_id"
+                constraintName="fk_wishlist_badge_wishlist_entry_id"
+                referencedTableName="wishlist_entry"
+                referencedColumnNames="id"
+        />
+
+    </changeSet>
+
+    <changeSet id="202210311662" author="igolob">
+
+        <createTable tableName="won_badge">
+            <column name="user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="badge_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_location_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="won_timestamp" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey tableName="won_badge" columnNames="user_id, badge_id, last_location_id"/>
+
+        <addForeignKeyConstraint
+                baseTableName="won_badge"
+                baseColumnNames="user_id"
+                constraintName="fk_won_badge_user_id"
+                referencedTableName="user_profile"
+                referencedColumnNames="user_id"
+        />
+
+        <addForeignKeyConstraint
+                baseTableName="won_badge"
+                baseColumnNames="badge_id"
+                constraintName="fk_won_badge_badge_id"
+                referencedTableName="badge"
+                referencedColumnNames="id"
+        />
+
+        <addForeignKeyConstraint
+                baseTableName="won_badge"
+                baseColumnNames="last_location_id"
+                constraintName="fk_won_badge_last_location_id"
+                referencedTableName="location"
+                referencedColumnNames="id"
+        />
+
+    </changeSet>
+
+    <changeSet id="202217120908" author="igolob">
+        <dropNotNullConstraint tableName="user_profile" columnName="profile_image" />
+    </changeSet>
+
+    <changeSet id="202301110318" author="mkoscec">
+        <dropColumn tableName="badge" columnName="image"/>
+        <addColumn tableName="badge" >
+            <column name="image" type="bytea" >
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="202210311154" author="igolob">
+
+        <createTable tableName="country">
+            <column name="code" type="varchar(7)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+    </changeSet>
+
+    <changeSet id="202210311155" author="igolob">
+
+        <createSequence sequenceName="city_id_seq" startValue="1" incrementBy="1"/>
+
+        <createTable tableName="city">
+            <column name="id" type="bigint" defaultValueSequenceNext="city_id_seq">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="country_code" type="varchar(7)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="city"
+                baseColumnNames="country_code"
+                constraintName="fk_city_country_code"
+                referencedTableName="country"
+                referencedColumnNames="code"
+        />
+
+    </changeSet>
+
+    <changeSet id="202210311156" author="igolob">
+
+        <createSequence sequenceName="location_id_seq" startValue="1" incrementBy="1"/>
+
+        <createTable tableName="location">
+            <column name="id" type="bigint" defaultValueSequenceNext="location_id_seq">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="x_coordinate" type="double">
+                <constraints nullable="false"/>
+            </column>
+            <column name="y_coordinate" type="double">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+            <column name="city_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_suggestion" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="suggested_by_user_id" type="bigint">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="location"
+                baseColumnNames="city_id"
+                constraintName="fk_location_city_id"
+                referencedTableName="city"
+                referencedColumnNames="id"
+        />
+
+        <addForeignKeyConstraint
+                baseTableName="location"
+                baseColumnNames="suggested_by_user_id"
+                constraintName="fk_location_suggested_by_user_id"
+                referencedTableName="account"
+                referencedColumnNames="id"
+        />
+
+    </changeSet>
+
+    <changeSet id="202211110157" author="eprodan">
+        <renameColumn tableName="location" oldColumnName="is_suggestion" newColumnName="suggestion"/>
+    </changeSet>
+
+    <changeSet id="202212171741" author="igolob">
+        <addColumn tableName="city">
+            <column name="capital" type="boolean"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="202209011143" author="eprodan">
+        <dropNotNullConstraint tableName="location" columnName="city_id"/>
+    </changeSet>
+
+</databaseChangeLog>

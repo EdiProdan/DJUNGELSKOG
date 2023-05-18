@@ -1,0 +1,22 @@
+.custom-popup .leaflet-popup {
+  margin-bottom: 10px;
+}
+
+.custom-popup .leaflet-popup-content-wrapper {
+  background: white;
+  border-radius: 10px;
+}
+
+/* .custom-popup span {
+  color: red;
+} */
+
+.custom-popup .leaflet-popup-tip-container {
+  height: 20px; 
+  width: 40px;
+}
+
+.custom-popup .leaflet-popup-tip {
+  border: none;
+  border-radius: 6px;
+}

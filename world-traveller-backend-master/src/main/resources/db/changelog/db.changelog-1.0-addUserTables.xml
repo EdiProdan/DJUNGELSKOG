@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="202210272108" author="igolob">
+
+        <createSequence sequenceName="account_id_seq" startValue="1" incrementBy="1"/>
+
+        <createTable tableName="account">
+            <column name="id" type="bigint" defaultValueSequenceNext="account_id_seq">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="surname" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="username" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="email" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="password" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_active" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+    </changeSet>
+
+    <changeSet id="202210281223" author="igolob">
+
+        <createTable tableName="user_profile">
+            <column name="user_id" type="bigint">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="is_public" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="profile_image" type="blob">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="user_profile"
+                baseColumnNames="user_id"
+                constraintName="fk_user_profile_user_id"
+                referencedTableName="account"
+                referencedColumnNames="id"
+        />
+
+    </changeSet>
+
+    <changeSet id="202210281233" author="igolob">
+
+        <createSequence sequenceName="role_id_seq" startValue="1" incrementBy="1"/>
+
+        <createTable tableName="role">
+            <column name="id" type="bigint" defaultValueSequenceNext="role_id_seq">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="user_role">
+            <column name="user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey tableName="user_role" columnNames="user_id, role_id"/>
+
+        <addForeignKeyConstraint
+                baseTableName="user_role"
+                baseColumnNames="user_id"
+                constraintName="fk_user_role_user_id"
+                referencedTableName="account"
+                referencedColumnNames="id"
+        />
+
+        <addForeignKeyConstraint
+                baseTableName="user_role"
+                baseColumnNames="role_id"
+                constraintName="fk_user_role_role_id"
+                referencedTableName="role"
+                referencedColumnNames="id"
+        />
+
+    </changeSet>
+
+    <changeSet id="202210281246" author="igolob">
+
+        <createTable tableName="friend">
+            <column name="from_user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="to_user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_trip_friend" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey tableName="friend" columnNames="from_user_id, to_user_id"/>
+
+        <addForeignKeyConstraint
+                baseTableName="friend"
+                baseColumnNames="from_user_id"
+                constraintName="fk_friend_from_user_id"
+                referencedTableName="user_profile"
+                referencedColumnNames="user_id"
+        />
+
+        <addForeignKeyConstraint
+                baseTableName="friend"
+                baseColumnNames="to_user_id"
+                constraintName="fk_friend_to_user_id"
+                referencedTableName="user_profile"
+                referencedColumnNames="user_id"
+        />
+
+    </changeSet>
+
+    <changeSet id="202211081918" author="mkoscec">
+        <renameColumn tableName="account" oldColumnName="is_active" newColumnName="active"/>
+
+        <createSequence sequenceName="refresh_token_id_seq" startValue="1" incrementBy="1"/>
+        <createTable tableName="refresh_token">
+            <column name="id" type="bigint" defaultValueSequenceNext="refresh_token_id_seq">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_refresh_token"/>
+            </column>
+            <column name="uuid" type="varchar(36)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expires" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="access_token_expires" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints foreignKeyName="FK_refresh_token_user" references="account(id)" nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="202211110154" author="eprodan">
+        <renameColumn tableName="user_profile" oldColumnName="is_public" newColumnName="public"/>
+        <renameColumn tableName="friend" oldColumnName="is_trip_friend" newColumnName="trip_friend"/>
+    </changeSet>
+
+    <changeSet id="202217120908" author="igolob">
+        <dropNotNullConstraint tableName="user_profile" columnName="profile_image" />
+    </changeSet>
+
+    <changeSet id="202201100045" author="igolob">
+        <dropColumn tableName="user_profile" columnName="profile_image"/>
+        <addColumn tableName="user_profile" >
+            <column name="profile_image" type="bytea" >
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>
